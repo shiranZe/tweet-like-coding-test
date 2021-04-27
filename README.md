@@ -1,3 +1,6 @@
+If you prefer working in a codesandox environment instead of cloning the repo locally you can do it here:
+https://codesandbox.io/s/tweet-like-coding-test-87ur3
+
 Right now the app renders two static tweets.
 
   1. Use the fetchTweets function to fetch tweets and render them (id, name, handle and text).
