@@ -1,7 +1,7 @@
 If you prefer working in a codesandox environment instead of cloning the repo locally you can do it here:
 https://codesandbox.io/s/tweet-like-coding-test-87ur3
 
-###Task description:
+*Task description:*
 
 Right now the app renders two static tweets.
 
@@ -19,6 +19,6 @@ Right now the app renders two static tweets.
   4. Undo popover should close when clicking outside of it. Closing the popover should
      send the tweet like request immediately
 
-###Terms:
+*Terms:*
 
 Optimistically update the UI - This means that the like/unlike action should be performed regardless of the server response. And in case of a server failure it should be reverted.
