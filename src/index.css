@@ -7,6 +7,7 @@
   font-family: "Helvetica", arial, sans-serif;
   font-size: 14px;
   line-height: 18px;
+  margin-block-end: 10px;
 }
 .avatar {
   width: 48px;
@@ -45,4 +46,30 @@
 
 .buttons i {
   width: 80px;
+}
+
+.popup{
+  position: absolute;
+    height: 100px;
+    width: 100px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    left: 385px;
+    margin-top:-10px;
+}
+
+.popup-btn{
+    width: 100px;
+    background-color: #ff4242f2;
+    border-radius: 8px;
+    color: #fff;
+    font-family: "Indie Flower", cursive;
+    font-size: 22px;
+}
+
+.popup-btn:hover{
+  box-shadow: #ccc 3px 0px 8px 2px;
+  cursor: pointer;
+  transition: .3s;
 }
