@@ -18,8 +18,7 @@ function App() {
   }, [])
   return (
     <>
-      {tweets? tweets.map(tweet => <Tweet tweet={tweet} />) : <p>Loading...</p>}
-
+      {tweets? tweets.map(tweet => <Tweet key={tweet.id} tweet={tweet} likeTweet={likeTweet}/>) : <p>Loading...</p>}
     </>
   );
 }

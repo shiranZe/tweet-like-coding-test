@@ -1,9 +1,9 @@
-import React from "react";
+import React, { useState } from "react";
 import Avatar from "./Avatar";
 import Message from "./Message";
 import NameWithHandle from "./NameWithHandle";
 
-export default function Tweet({ tweet }) {
+export default function Tweet({ tweet, likeTweet }) {
   return (
     <div className="tweet">
       <Avatar />
@@ -13,7 +13,7 @@ export default function Tweet({ tweet }) {
         <div className="buttons">
           <Reply />
           <RetweetButton />
-          <LikeButton />
+          <LikeButton id={tweet.id} likeTweet={likeTweet} />
           <MoreOPtionsButton />
         </div>
       </div>
@@ -28,7 +28,15 @@ const Reply = () => <i className="fa fa-reply reply-button" />;
 
 const RetweetButton = () => <i className="fa fa-retweet retweet-button" />;
 
-const LikeButton = () => <i className="fa fa-heart like-button" />;
+const LikeButton = ({id, likeTweet}) => {
+  const [color, setColor] = useState(false);
+  const handleClick = async ()=>{
+    setColor(!color)
+    await likeTweet(id)
+  }
+
+  return <i onClick={handleClick} className={color? `fa fa-heart like-button liked`: "fa fa-heart like-button"} />;
+}
 
 const MoreOPtionsButton = () => (
   <i className="fa fa-ellipsis-h more-options-button" />
