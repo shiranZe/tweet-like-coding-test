@@ -1,4 +1,4 @@
-import React, { useState, useEffect, } from "react";
+import React, { useState } from "react";
 import Avatar from "./Avatar";
 import Message from "./Message";
 import NameWithHandle from "./NameWithHandle";
@@ -28,7 +28,7 @@ export default function Tweet({ tweet }) {
   return (
     <div className="tweet">
       <div >
-        {isOpen && <Popup setIsOpen={setIsOpen} onAbort={onAbort} onRequestCompleted={onRequestCompleted} togglePopup={() => setIsAborted(true)} />}
+        {isOpen && <Popup setIsOpen={setIsOpen} onAbort={onAbort} onRequestCompleted={onRequestCompleted} />}
       </div>
       <Avatar />
       <div className="content">
