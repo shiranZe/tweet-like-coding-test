@@ -1,58 +1,34 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, } from "react";
 import Avatar from "./Avatar";
 import Message from "./Message";
 import NameWithHandle from "./NameWithHandle";
 import Popup from "./Popup"
 import { likeTweet } from './api'
 
-export default function Tweet({ tweet, isLiked, likedTweets, setLikedTweets }) {
+export default function Tweet({ tweet }) {
 
   const [isOpen, setIsOpen] = useState(false)
-  const popoverRef = useRef(null)
+  const [isLiked, setIsLiked] = useState(isLiked)
 
-  useEffect(() => {
-    document.addEventListener('click', handleClickOutside, true);
-    return () => {
-      document.removeEventListener('click', handleClickOutside, true);
-    };
-  });
-
-  async function setIsLiked(tweetId, didToggle = false) {
-    const value = likedTweets[tweetId] ? !likedTweets[tweetId] : true
-    setLikedTweets({ ...likedTweets, [tweetId]: value })
-    if(didToggle){
-      setIsOpen(false)
-      return
-    }
+  async function onRequestCompleted() {
+    setIsOpen(false)
     try {
-      await likeTweet(tweetId)
-      toggleLike()
-      setIsOpen(!isOpen)
-    } catch (err) {
-      setTimeout(() => {
-        setLikedTweets({ ...likedTweets, [tweetId]: !value })
-        console.log(err)
-      }, 500);
+      await likeTweet(tweet.id)
+    } catch (error) {
+      console.log(error)
+      setIsLiked(!isLiked)
     }
   }
 
-  function toggleLike() {
-    setIsOpen(!isOpen)
-    setTimeout(() => {
-      setIsOpen(false)
-    }, 3000);
+  function onAbort() {
+    setIsOpen(false)
+    setIsLiked(!isLiked)
   }
-
-  const handleClickOutside = (e) => {
-    if (popoverRef.current && !popoverRef.current.contains(e.target)) {
-      setIsOpen(false);
-    }
-  };
 
   return (
     <div className="tweet">
-      <div ref={popoverRef}>
-        {isOpen && <Popup togglePopup={() => setIsLiked(tweet.id, true)} />}
+      <div >
+        {isOpen && <Popup setIsOpen={setIsOpen} onAbort={onAbort} onRequestCompleted={onRequestCompleted} togglePopup={() => setIsAborted(true)} />}
       </div>
       <Avatar />
       <div className="content">
@@ -61,7 +37,11 @@ export default function Tweet({ tweet, isLiked, likedTweets, setLikedTweets }) {
         <div className="buttons">
           <Reply />
           <RetweetButton />
-          <LikeButton isLiked={isLiked} toggleLike={() => setIsLiked(tweet.id)} />
+          <LikeButton isLiked={isLiked} toggleLike={() => {
+            setIsLiked(!isLiked)
+            setIsOpen(true)
+          }}
+          />
           <MoreOPtionsButton />
         </div>
       </div>

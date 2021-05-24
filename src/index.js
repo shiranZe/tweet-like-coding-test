@@ -4,12 +4,9 @@ import "./index.css";
 import Tweet from "./Tweet";
 import { fetchTweets } from "./api";
 
-const staticTweets = [{ name: "James Blake", handle: "@jblake", id: 1 }, { name: "Elon Musk", handle: "@emusk", id: 2 }]
-
 function App() {
-  const [tweets, setTweets] = useState(staticTweets)
-  const [likedTweets, setLikedTweets] = useState({})
-  
+  const [tweets, setTweets] = useState([])
+
 
   useEffect(() => {
     async function fetchData() {
@@ -24,11 +21,8 @@ function App() {
   return (
     <>
       {tweets.map(tweet => <Tweet
-        isLiked={likedTweets[tweet.id]}
         key={tweet.id}
         tweet={tweet}
-        setLikedTweets={setLikedTweets}
-        likedTweets={likedTweets}
       />)}
     </>
   );
