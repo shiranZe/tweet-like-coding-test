@@ -1,9 +1,6 @@
 ![image](https://user-images.githubusercontent.com/2545447/118928968-95fd7180-b94c-11eb-9dc8-94dbca7a039b.png)
 
 
-If you prefer working in a codesandox environment instead of cloning the repo locally you can do it here:
-https://codesandbox.io/s/tweet-like-coding-test-87ur3
-
 **Task description:**
 
 Right now the app renders two static tweets.
