@@ -1,6 +1,11 @@
 ![image](https://user-images.githubusercontent.com/2545447/118928968-95fd7180-b94c-11eb-9dc8-94dbca7a039b.png)
 
 
+I prepared a short 4min video going over the tasks and showing an example app:
+https://www.loom.com/share/ea3061421bfb4dfda02143be870f8107
+
+Please watch it and make sure everything is clear.
+
 **Task description:**
 
 Right now the app renders two static tweets.
