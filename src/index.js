@@ -8,17 +8,20 @@ import { fetchTweets, likeTweet } from "./api";
 function App() {
   const [tweets, setTweets] = useState([]);
   const [showToastr, setShowToastr] = useState(false);
-  const [currentLikeTweetId, setCurrentLikeTweetId] = useState("");
+  const [currentLikeTweetId, setCurrentLikeTweetId] = useState(null);
   const [timeoutId, setTimeoutId] = useState(null);
   const toastrRef = useRef(null);
 
   useEffect(() => {
     fetchTweetsData();
+  }, []);
+
+  useEffect(() => {
     document.addEventListener("click", handleClickOutside, true);
     return () => {
       document.removeEventListener("click", handleClickOutside, true);
     };
-  }, []);
+  },[toastrRef, handleClickOutside]);
 
   const fetchTweetsData = async () => {
     const tweetsData = await fetchTweets();
@@ -27,21 +30,24 @@ function App() {
 
   const handleClickOutside = () => {
     console.log("Outside");
-    if (toastrRef.current) {
+    if (toastrRef.current && showToastr) {
       setShowToastr(false);
       clearTimeout(timeoutId);
       likeTweet(currentLikeTweetId);
+      setCurrentLikeTweetId(null);
     }
   };
 
-  const handleLikeClick = ({ id, isLikeActivated }) => {
-    if (!isLikeActivated) {
+  const handleLikeClick = ({ id, isLike }) => {
+    console.log("clicked: ", id);
+    toggleTweetLikeStateById(id, !isLike);
+    if (!isLike) {
       setCurrentLikeTweetId(id);
       setShowToastr(true);
       const timerId = setTimeout(() => {
         setShowToastr(false);
         likeTweetAction(id);
-        setCurrentLikeTweetId("");
+        setCurrentLikeTweetId(null);
       }, [TOASTR_TIMEOUT]);
       setTimeoutId(timerId);
     }
@@ -51,44 +57,31 @@ function App() {
     return tweets.findIndex((item) => item.id === tweetId);
   };
 
-  const toggleTweetLikeStateById = (tweetId, isLike = false) => {
+  const toggleTweetLikeStateById = (tweetId, isLike) => {
     const tweetsData = [...tweets];
     const likedTweetIndex = getTweetIndexById(tweetId);
     tweetsData[likedTweetIndex] = {
       ...tweetsData[likedTweetIndex],
-      isLike: !isLike,
+      isLike: isLike,
     };
     setTweets(tweetsData);
   };
 
   const handleUndoClick = () => {
-    console.log("Undo");
     setShowToastr(false);
     clearTimeout(timeoutId);
-    const tweetsData = [...tweets];
-    const likedTweetIndex = tweetsData.findIndex(
-      (item) => item.id === currentLikeTweetId
-    );
-    tweetsData[likedTweetIndex] = {
-      ...tweetsData[likedTweetIndex],
-      isLikeActivated: false,
-    };
-    setTweets(tweetsData);
+    console.log('currentLikeTweetId: ', currentLikeTweetId);
+    toggleTweetLikeStateById(currentLikeTweetId, false);
   };
 
   const likeTweetAction = async (tweetId) => {
+    setCurrentLikeTweetId(null);
     try {
       await likeTweet(tweetId);
       console.log("success!", tweetId);
     } catch (err) {
       console.log("failure: ", err);
-      const tweetsData = [...tweets];
-      const likedTweetIndex = getTweetIndexById(tweetId);
-      tweetsData[likedTweetIndex] = {
-        ...tweetsData[likedTweetIndex],
-        isLikeActivated: false,
-      };
-      setTweets(tweetsData);
+      toggleTweetLikeStateById(tweetId, false);
     }
   };
 

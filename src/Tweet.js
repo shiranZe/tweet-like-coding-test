@@ -15,7 +15,7 @@ export default function Tweet({ tweet, onLikeClick }) {
           <RetweetButton />
           <LikeButton
             onClick={() => onLikeClick(tweet)}
-            isLikeActivated={tweet.isLikeActivated}
+            isLikeActivated={tweet.isLike}
           />
           <MoreOPtionsButton />
         </div>
