@@ -4,9 +4,15 @@ function Toastr({ onUndoClick, onOutsideClick }) {
   const toastrRef = useRef(null);
 
   useEffect(() => {
-    document.addEventListener("click", onOutsideClick, true);
+    const handleOutsideClick = (event) => {
+      if (toastrRef.current && !toastrRef.current.contains(event.target)) {
+        onOutsideClick();
+      }
+    };
+
+    document.addEventListener("click", handleOutsideClick, true);
     return () => {
-      document.removeEventListener("click", onOutsideClick, true);
+      document.removeEventListener("click", handleOutsideClick, true);
     };
   }, [toastrRef, onOutsideClick]);
 
