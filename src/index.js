@@ -1,19 +1,23 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import ReactDOM from "react-dom";
 import "./index.css";
 import Tweet from "./Tweet";
 import Toastr from "./Toastr";
 import { fetchTweets, likeTweet } from "./api";
-import { isTemplateMiddle } from "typescript";
 
 function App() {
   const [tweets, setTweets] = useState([]);
   const [showToastr, setShowToastr] = useState(false);
   const [currentLikeTweetId, setCurrentLikeTweetId] = useState("");
   const [timeoutId, setTimeoutId] = useState(null);
+  const toastrRef = useRef(null);
 
   useEffect(() => {
     fetchTweetsData();
+    document.addEventListener("click", handleClickOutside, true);
+    return () => {
+      document.removeEventListener("click", handleClickOutside, true);
+    };
   }, []);
 
   const fetchTweetsData = async () => {
@@ -21,14 +25,16 @@ function App() {
     setTweets(tweetsData);
   };
 
+  const handleClickOutside = () => {
+    console.log("Outside");
+    if (toastrRef.current) {
+      setShowToastr(false);
+      clearTimeout(timeoutId);
+      likeTweet(currentLikeTweetId);
+    }
+  };
+
   const handleLikeClick = ({ id, isLikeActivated }) => {
-    const tweetsData = [...tweets];
-    const likedTweetIndex = getTweetIndexById(id);
-    tweetsData[likedTweetIndex] = {
-      ...tweetsData[likedTweetIndex],
-      isLikeActivated: !isLikeActivated,
-    };
-    setTweets(tweetsData);
     if (!isLikeActivated) {
       setCurrentLikeTweetId(id);
       setShowToastr(true);
@@ -43,6 +49,16 @@ function App() {
 
   const getTweetIndexById = (tweetId) => {
     return tweets.findIndex((item) => item.id === tweetId);
+  };
+
+  const toggleTweetLikeStateById = (tweetId, isLike = false) => {
+    const tweetsData = [...tweets];
+    const likedTweetIndex = getTweetIndexById(tweetId);
+    tweetsData[likedTweetIndex] = {
+      ...tweetsData[likedTweetIndex],
+      isLike: !isLike,
+    };
+    setTweets(tweetsData);
   };
 
   const handleUndoClick = () => {
@@ -62,7 +78,8 @@ function App() {
 
   const likeTweetAction = async (tweetId) => {
     try {
-      const likeResponse = await likeTweet(tweetId);
+      await likeTweet(tweetId);
+      console.log("success!", tweetId);
     } catch (err) {
       console.log("failure: ", err);
       const tweetsData = [...tweets];
@@ -87,7 +104,11 @@ function App() {
             />
           );
         })}
-      {showToastr && <Toastr onUndoClick={handleUndoClick} />}
+      {showToastr && (
+        <div ref={toastrRef}>
+          <Toastr onUndoClick={handleUndoClick} />
+        </div>
+      )}
     </>
   );
 }
