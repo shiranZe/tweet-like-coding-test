@@ -1,14 +1,27 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import ReactDOM from "react-dom";
 import "./index.css";
 import Tweet from "./Tweet";
-// import { fetchTweets, likeTweet } from "./api";
+import { fetchTweets, likeTweet } from "./api";
 
 function App() {
+  const [tweets, setTweets] = useState([]);
+
+  useEffect(() => {
+    fetchTweetsData();
+  }, []);
+
+  const fetchTweetsData = async () => {
+    const tweetsData = await fetchTweets();
+    setTweets(tweetsData);
+  };
+
   return (
     <>
-      <Tweet tweet={{ name: "James Blake", handle: "@jblake" }} />
-      <Tweet tweet={{ name: "Elon Musk", handle: "@emusk" }} />
+      {tweets.length &&
+        tweets.map((tweetItem) => {
+          return <Tweet key={tweetItem.id} tweet={tweetItem} />;
+        })}
     </>
   );
 }
