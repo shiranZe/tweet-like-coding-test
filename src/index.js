@@ -4,10 +4,13 @@ import "./index.css";
 import Tweet from "./Tweet";
 import Toastr from "./Toastr";
 import { fetchTweets, likeTweet } from "./api";
+import { isTemplateMiddle } from "typescript";
 
 function App() {
   const [tweets, setTweets] = useState([]);
   const [showToastr, setShowToastr] = useState(false);
+  const [currentLikeTweetId, setCurrentLikeTweetId] = useState("");
+  const [timeoutId, setTimeoutId] = useState(null);
 
   useEffect(() => {
     fetchTweetsData();
@@ -20,22 +23,56 @@ function App() {
 
   const handleLikeClick = ({ id, isLikeActivated }) => {
     const tweetsData = [...tweets];
-    const likedTweetIndex = tweetsData.findIndex((item) => item.id === id);
+    const likedTweetIndex = getTweetIndexById(id);
     tweetsData[likedTweetIndex] = {
       ...tweetsData[likedTweetIndex],
       isLikeActivated: !isLikeActivated,
     };
     setTweets(tweetsData);
     if (!isLikeActivated) {
+      setCurrentLikeTweetId(id);
       setShowToastr(true);
-      setTimeout(() => {
+      const timerId = setTimeout(() => {
         setShowToastr(false);
+        likeTweetAction(id);
+        setCurrentLikeTweetId("");
       }, [TOASTR_TIMEOUT]);
+      setTimeoutId(timerId);
     }
+  };
+
+  const getTweetIndexById = (tweetId) => {
+    return tweets.findIndex((item) => item.id === tweetId);
   };
 
   const handleUndoClick = () => {
     console.log("Undo");
+    setShowToastr(false);
+    clearTimeout(timeoutId);
+    const tweetsData = [...tweets];
+    const likedTweetIndex = tweetsData.findIndex(
+      (item) => item.id === currentLikeTweetId
+    );
+    tweetsData[likedTweetIndex] = {
+      ...tweetsData[likedTweetIndex],
+      isLikeActivated: false,
+    };
+    setTweets(tweetsData);
+  };
+
+  const likeTweetAction = async (tweetId) => {
+    try {
+      const likeResponse = await likeTweet(tweetId);
+    } catch (err) {
+      console.log("failure: ", err);
+      const tweetsData = [...tweets];
+      const likedTweetIndex = getTweetIndexById(tweetId);
+      tweetsData[likedTweetIndex] = {
+        ...tweetsData[likedTweetIndex],
+        isLikeActivated: false,
+      };
+      setTweets(tweetsData);
+    }
   };
 
   return (
