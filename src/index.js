@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useState } from "react";
 import ReactDOM from "react-dom";
 import "./index.css";
 import Tweet from "./Tweet";
@@ -10,36 +10,23 @@ function App() {
   const [showToastr, setShowToastr] = useState(false);
   const [currentLikeTweetId, setCurrentLikeTweetId] = useState(null);
   const [timeoutId, setTimeoutId] = useState(null);
-  const toastrRef = useRef(null);
 
   useEffect(() => {
     fetchTweetsData();
   }, []);
-
-  useEffect(() => {
-    document.addEventListener("click", handleClickOutside, true);
-    return () => {
-      document.removeEventListener("click", handleClickOutside, true);
-    };
-  },[toastrRef, handleClickOutside]);
 
   const fetchTweetsData = async () => {
     const tweetsData = await fetchTweets();
     setTweets(tweetsData);
   };
 
-  const handleClickOutside = () => {
-    console.log("Outside");
-    if (toastrRef.current && showToastr) {
-      setShowToastr(false);
-      clearTimeout(timeoutId);
-      likeTweet(currentLikeTweetId);
-      setCurrentLikeTweetId(null);
-    }
-  };
+  function handleOutsideClick() {
+    setShowToastr(false);
+    clearTimeout(timeoutId);
+    likeTweetAction(currentLikeTweetId);
+  }
 
   const handleLikeClick = ({ id, isLike }) => {
-    console.log("clicked: ", id);
     toggleTweetLikeStateById(id, !isLike);
     if (!isLike) {
       setCurrentLikeTweetId(id);
@@ -47,7 +34,6 @@ function App() {
       const timerId = setTimeout(() => {
         setShowToastr(false);
         likeTweetAction(id);
-        setCurrentLikeTweetId(null);
       }, [TOASTR_TIMEOUT]);
       setTimeoutId(timerId);
     }
@@ -70,18 +56,20 @@ function App() {
   const handleUndoClick = () => {
     setShowToastr(false);
     clearTimeout(timeoutId);
-    console.log('currentLikeTweetId: ', currentLikeTweetId);
     toggleTweetLikeStateById(currentLikeTweetId, false);
   };
 
   const likeTweetAction = async (tweetId) => {
-    setCurrentLikeTweetId(null);
     try {
       await likeTweet(tweetId);
       console.log("success!", tweetId);
+      toggleTweetLikeStateById(tweetId, true);
     } catch (err) {
       console.log("failure: ", err);
       toggleTweetLikeStateById(tweetId, false);
+    }finally{
+      setCurrentLikeTweetId(null);
+
     }
   };
 
@@ -98,9 +86,10 @@ function App() {
           );
         })}
       {showToastr && (
-        <div ref={toastrRef}>
-          <Toastr onUndoClick={handleUndoClick} />
-        </div>
+        <Toastr
+          onUndoClick={handleUndoClick}
+          onOutsideClick={handleOutsideClick}
+        />
       )}
     </>
   );
