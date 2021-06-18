@@ -47,7 +47,29 @@
   width: 80px;
 }
 
-.like-button-full{
- color: red;
+.like-button-full {
+  color: red;
 }
 
+.toastr-wrapper {
+  position: fixed;
+  display: flex;
+  gap: 5px;
+  margin: 10px;
+  padding: 10px;
+  align-items: center;
+  top: 0;
+  background-color: salmon;
+  color: white;
+  font-weight: bold;
+  border: 1px solid sandybrown;
+  right: 0;
+}
+
+.undo-like-btn {
+  outline: none;
+  cursor: pointer;
+  border-radius: 5px;
+  background-color: white;
+  color: darkred;
+}

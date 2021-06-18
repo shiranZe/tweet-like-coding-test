@@ -2,10 +2,12 @@ import React, { useEffect, useState } from "react";
 import ReactDOM from "react-dom";
 import "./index.css";
 import Tweet from "./Tweet";
+import Toastr from "./Toastr";
 import { fetchTweets, likeTweet } from "./api";
 
 function App() {
   const [tweets, setTweets] = useState([]);
+  const [showToastr, setShowToastr] = useState(false);
 
   useEffect(() => {
     fetchTweetsData();
@@ -16,11 +18,24 @@ function App() {
     setTweets(tweetsData);
   };
 
-  const handleLikeClick = (tweetId, isLikeActivated) => {
+  const handleLikeClick = ({ id, isLikeActivated }) => {
     const tweetsData = [...tweets];
-    const likedTweetIndex = tweetsData.findIndex((item) => item.id === tweetId);
-    tweetsData[likedTweetIndex] = { ...tweetsData[likedTweetIndex], isLikeActivated: !isLikeActivated };
+    const likedTweetIndex = tweetsData.findIndex((item) => item.id === id);
+    tweetsData[likedTweetIndex] = {
+      ...tweetsData[likedTweetIndex],
+      isLikeActivated: !isLikeActivated,
+    };
     setTweets(tweetsData);
+    if (!isLikeActivated) {
+      setShowToastr(true);
+      setTimeout(() => {
+        setShowToastr(false);
+      }, [TOASTR_TIMEOUT]);
+    }
+  };
+
+  const handleUndoClick = () => {
+    console.log("Undo");
   };
 
   return (
@@ -35,9 +50,12 @@ function App() {
             />
           );
         })}
+      {showToastr && <Toastr onUndoClick={handleUndoClick} />}
     </>
   );
 }
+
+const TOASTR_TIMEOUT = 3000;
 
 const rootElement = document.getElementById("root");
 
