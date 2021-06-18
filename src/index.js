@@ -16,11 +16,24 @@ function App() {
     setTweets(tweetsData);
   };
 
+  const handleLikeClick = (tweetId, isLikeActivated) => {
+    const tweetsData = [...tweets];
+    const likedTweetIndex = tweetsData.findIndex((item) => item.id === tweetId);
+    tweetsData[likedTweetIndex] = { ...tweetsData[likedTweetIndex], isLikeActivated: !isLikeActivated };
+    setTweets(tweetsData);
+  };
+
   return (
     <>
       {tweets.length &&
         tweets.map((tweetItem) => {
-          return <Tweet key={tweetItem.id} tweet={tweetItem} />;
+          return (
+            <Tweet
+              key={tweetItem.id}
+              tweet={tweetItem}
+              onLikeClick={handleLikeClick}
+            />
+          );
         })}
     </>
   );

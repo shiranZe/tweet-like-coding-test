@@ -3,7 +3,7 @@ import Avatar from "./Avatar";
 import Message from "./Message";
 import NameWithHandle from "./NameWithHandle";
 
-export default function Tweet({ tweet }) {
+export default function Tweet({ tweet, onLikeClick }) {
   return (
     <div className="tweet">
       <Avatar />
@@ -13,7 +13,10 @@ export default function Tweet({ tweet }) {
         <div className="buttons">
           <Reply />
           <RetweetButton />
-          <LikeButton />
+          <LikeButton
+            onClick={() => onLikeClick(tweet.id, tweet.isLikeActivated)}
+            isLikeActivated={tweet.isLikeActivated}
+          />
           <MoreOPtionsButton />
         </div>
       </div>
@@ -28,7 +31,16 @@ const Reply = () => <i className="fa fa-reply reply-button" />;
 
 const RetweetButton = () => <i className="fa fa-retweet retweet-button" />;
 
-const LikeButton = () => <i className="fa fa-heart like-button" />;
+const LikeButton = ({ onClick, isLikeActivated }) => (
+  <i
+    className={
+      isLikeActivated
+        ? "fa fa-heart like-button-full"
+        : "fa fa-heart like-button"
+    }
+    onClick={onClick}
+  />
+);
 
 const MoreOPtionsButton = () => (
   <i className="fa fa-ellipsis-h more-options-button" />
